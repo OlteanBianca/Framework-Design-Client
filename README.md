@@ -1,70 +1,107 @@
-# Getting Started with Create React App
+# GraphQL Library Management
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Description
 
-## Available Scripts
+A GraphQL-based library management system that allows users to manage clients, books, authors, libraries, and borrowed books efficiently.
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- **Client Management**: Add, update, and delete client information.
+- **Book Management**: Manage books, including adding new books, updating details, and deleting entries.
+- **Author Management**: Maintain author information and associate authors with books.
+- **Library Management**: Manage libraries, including what books each of them contains.
+- **Borrowed Book Management**: Track borrowed books, including due dates and client information.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Technologies Used
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **GraphQL**: A query language for your API.
+- **React**: A JavaScript library for building user interfaces.
+- **Node.js**: A JavaScript runtime built on Chrome's V8 JavaScript engine.
+- **Express**: A web application framework for Node.js.
+- **Apollo Client**: A GraphQL client library for Node.js.
+- **React Apollo**: A GraphQL client for React.
 
-### `npm test`
+## Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Follow these instructions to get the project up and running on your local machine for development and testing purposes.
 
-### `npm run build`
+### Prerequisites
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Node.js and npm installed
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Installation
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Clone both the server and client repository:
 
-### `npm run eject`
+   ```bash
+   git clone https://github.com/OlteanBianca/Framework-Design-Server.git
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+   git clone https://github.com/OlteanBianca/Framework-Design-Client.git
+   ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2. Start the applications:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+   ```bash
+   //for the server app: 
+   node src/index.js
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+   //for the client app:
+   npm start
+   ```
 
-## Learn More
+3. Access and test the server application in your web browser at `http://localhost:4000/graphql`.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+    Access the client applications at `http://localhost:3000` (Both server and client application need to run at the same time)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Usage
 
-### Code Splitting
+After starting both applications and opening the page `http://localhost:3000` a simple interface will appear.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The client application is using the Appollo Client Library to connect to the server application:
 
-### Analyzing the Bundle Size
+```bash
+const client = new ApolloClient({
+  link: new HttpLink({
+    uri: 'http://localhost:4000/graphql',
+  }),
+  cache: new InMemoryCache(),
+});
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+To access the queries from the server application the GQL function is being used:
 
-### Making a Progressive Web App
+```bash
+export const GET_CLIENTS = gql`
+  query GetClients {
+    clients {
+      id
+      name
+      borrowedBooks {
+        id
+        book {
+          id
+          title
+        }
+      }
+    }
+  }
+`;
+```
+After that the Query GET_CLIENTS can be used in the components to display the data:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```bash
+const { loading, error, data } = useQuery(GET_CLIENTS);
 
-### Advanced Configuration
+if (loading) return <p>Loading...</p>;
+if (error) return <p>Error: {error.message}</p>;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+return (
+    <ul>
+      {data.clients.map((client) => (
+        <li key={client.id}>
+          Title: {client.name}
+        </li>
+      ))}
+    </ul>
+  );
+ ```
