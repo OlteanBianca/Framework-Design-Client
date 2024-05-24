@@ -17,7 +17,7 @@ const UpdateBorrowedBook = ({ borrowedBook, onCompleted }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateBorrowedBook({ variables: { id: borrowedBook.id, bookId: borrowedBook.bookId, clientId: borrowedBook.clientId, borrowedDate, dueDate } });
+    updateBorrowedBook({ variables: { id: borrowedBook.id, bookId: borrowedBook.book.id, clientId: borrowedBook.client.id, borrowedDate, dueDate } });
   };
 
   return (
